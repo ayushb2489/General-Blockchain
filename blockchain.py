@@ -8,7 +8,7 @@ import hashlib                      # for hashing
 
 class Blockchain:
     
-    def __init__(self):
+    def __init__ (self):
         
         # list containing all the blocks
         self.chain = []
@@ -50,7 +50,7 @@ class Blockchain:
             else:
                 proofCounter += 1
                 
-            return proofCounter
+        return proofCounter
         
       
         
@@ -59,7 +59,7 @@ class Blockchain:
     def getHash (self, block):
         
         # encode the json string of block
-        encodedBlock = json.dumps (blocks, sort_keys = True).encode()
+        encodedBlock = json.dumps (block, sort_keys = True).encode()
         
         return hashlib.sha256 (encodedBlock).hexdigest()
     
@@ -75,7 +75,7 @@ class Blockchain:
         #looping through whlole chain of blocks
         while currentBlockIndex < len (chain):
             
-            block = chain[currentBlockChain]
+            block = chain[currentBlockIndex]
             
             if (block['previousHash'] != self.getHash (previousBlock)):
                 return False
@@ -83,7 +83,7 @@ class Blockchain:
             previousProof = previousBlock ['proof']
             currentProof = block['proof']
             
-            hashed = hashlib.sha256 (str(currentProof ** 2 - previousProof ** 2).encode()).encode()
+            hashed = hashlib.sha256 (str(currentProof ** 2 - previousProof ** 2).encode()).hexdigest()
             if (hashed[ : 4] != '0000'):
                 return False
             
@@ -96,23 +96,23 @@ class Blockchain:
 
     
     
-    
-    
-# Creating a web app
+''' Creating a web app, 
+    Flask instance'''
 app = Flask (__name__)
+
+blockchain = Blockchain()
     
-# BlockChain object created
-blockchain = BlockChain ()
-    
+
+
 ''' GET request from HTTP Postman that will add new block to the
     blockchain and in response return '''
-@app.route ('/mineBlock', methods = ['GET'])
-    
-''' This will mine a new block by doing the proof of work 
-    and add the block to the block chain and give response to GET request'''
+
+@app.route ('/mineBlock', methods = ['GET']) 
+
+#    This will mine a new block by doing the proof of work 
+#    and add the block to the block chain and give response to GET request 
 def mineBlock ():
     
-    # Getting the requirements for createBlock , proof and previousHash
     previousBlock = blockchain.getPreviousBlock ()
     previousProof = previousBlock ['proof']
     
@@ -132,9 +132,50 @@ def mineBlock ():
     
     # Returning the response as json and with HTTP status code (200) = successful
     return jsonify (response), 200
+
+
+''' This will return whole chain of the blockchain for a request'''
+
+@app.route ('/getChain', methods = ['GET'])
+def getChain ():
     
+    response =  {
+                    'chain' : blockchain.chain,
+                    'length': len (blockchain.chain)
+                }
+        
+    return jsonify (response), 200
+
+
+@app.route ('/isValid', methods = ['GET'])
+
+def isValid ():
     
+    flag = blockchain.isChainValid (blockchain.chain)
+    
+    if flag:
+        response =  {
+                        'message' : 'Blockchain is valid' 
+                    }
+    else:
+        response =  {
+                        'message' : 'Their is some problems in Blockchain'
+                    }
+        
+    return jsonify (response), 200
             
+
+
+
+''' flask running on http://127.0.0.1:5000/
+    To make server publicly availaible by making host 0.0.0.0
+    
+    Running the app'''
+    
+app.run (host = '0.0.0.0', port = 5000)
+
+
+
 
 
 
