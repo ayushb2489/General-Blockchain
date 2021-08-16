@@ -35,6 +35,7 @@ class Blockchain:
         return self.chain[-1]
     
     
+    # this will get the PoW by mining
     def proofOfWork (self, previousHash):
         
         proofCounter = 1;
@@ -50,6 +51,17 @@ class Blockchain:
                 proofCounter += 1
                 
             return proofCounter
+        
+      
+        
+      
+    # return the hash of the block    
+    def hash (self, block):
+        
+        # encode the json string of block
+        encodedBlock = json.dumps (blocks, sort_keys = True).encode()
+        
+        return hashlib.sha256 (encodedBlock).hexdigest()
 
 
 
