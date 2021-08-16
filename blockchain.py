@@ -62,6 +62,36 @@ class Blockchain:
         encodedBlock = json.dumps (blocks, sort_keys = True).encode()
         
         return hashlib.sha256 (encodedBlock).hexdigest()
+    
+    
+    
+    # to Verify the the whole chain is valid to remove malicious activities
+    def isChainValid (self, chain):
+        
+        previousBlock = chain[0]       
+        currentBlockIndex = 1;
+        
+        
+        #looping through whlole chain of blocks
+        while currentBlockIndex < len (chain):
+            
+            block = chain[currentBlockChain]
+            
+            if (block['previousHash'] != self.hash (previousBlock)):
+                return False
+            
+            previousProof = previousBlock ['proof']
+            currentProof = block['proof']
+            
+            hashed = hashlib.sha256 (str(currentProof ** 2 - previousProof ** 2).encode()).encode()
+            if (hashed[ : 4] != '0000'):
+                return False
+            
+            previousBlock = block
+            currentBlockIndex += 1
+            
+        return True
+            
 
 
 
